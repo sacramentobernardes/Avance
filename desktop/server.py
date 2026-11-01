@@ -3,7 +3,7 @@
 - Serve os arquivos da aplicação em http://127.0.0.1:8765 (a webcam exige localhost ou HTTPS).
 - POST /convert recebe um .pptx e devolve o PDF gerado pelo PowerPoint instalado na máquina.
 
-Rodando direto (Iniciar.bat), abre o app no navegador. O aplicativo instalável (app.py)
+Rodando direto (python desktop/server.py), abre o app no navegador. O aplicativo instalável (app.py)
 usa make_server() para rodar o mesmo servidor dentro da própria janela.
 """
 
@@ -20,9 +20,12 @@ from pathlib import Path
 
 HOST = "127.0.0.1"
 PORT = int(os.environ.get("AVANCE_PORTA", 8765))
-# Dentro do Avance.exe, os arquivos do app ficam na pasta temporária do PyInstaller.
-ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
-CONVERTER = ROOT / "converter-pptx.ps1"
+HERE = Path(__file__).resolve().parent
+# No aplicativo empacotado, as páginas e o conversor ficam juntos na pasta do PyInstaller;
+# no código-fonte, as páginas estão em ../web e o conversor ao lado deste arquivo.
+BUNDLE = getattr(sys, "_MEIPASS", None)
+ROOT = Path(BUNDLE) if BUNDLE else HERE.parent / "web"
+CONVERTER = (Path(BUNDLE) if BUNDLE else HERE) / "converter-pptx.ps1"
 MAX_UPLOAD = 300 * 1024 * 1024
 
 

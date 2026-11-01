@@ -2,7 +2,7 @@
 
 Roda o mesmo servidor local do server.py numa thread e mostra o app numa janela do
 WebView2 (o motor do Edge que já vem no Windows 10 e 11), via pywebview.
-O instalador (gerar_instalador.py) empacota este arquivo como Avance.exe.
+O instalador (desktop/gerar_instalador.py) empacota este arquivo como Avance.exe.
 
 Variáveis de ambiente úteis para teste:
   AVANCE_PORTA_APP   porta do servidor interno (padrão 47821)

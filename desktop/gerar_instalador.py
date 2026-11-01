@@ -8,7 +8,7 @@ Pré-requisitos (uma vez):
   python -m pip install pyinstaller pywebview
   Inno Setup 6:  winget install JRSoftware.InnoSetup
 
-Uso:  python gerar_instalador.py
+Uso:  python desktop/gerar_instalador.py
 """
 
 import os
@@ -18,12 +18,15 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-BUILD = ROOT / "build"
-DIST = ROOT / "dist"
+HERE = Path(__file__).resolve().parent  # desktop/
+REPO = HERE.parent
+WEB = REPO / "web"
+BUILD = REPO / "build"
+DIST = REPO / "dist"
 
-# Arquivos que o servidor interno entrega à janela, mais o conversor de .pptx.
-DATA = ["index.html", "favicon.ico", "favicon.svg", "apple-touch-icon.png", "converter-pptx.ps1", "css", "js"]
+# O que o servidor interno entrega à janela (de web/), mais o conversor de .pptx (de desktop/).
+DATA = [WEB / "index.html", WEB / "favicon.ico", WEB / "favicon.svg", WEB / "apple-touch-icon.png",
+        WEB / "css", WEB / "js", HERE / "converter-pptx.ps1"]
 
 ISCC_PATHS = [
     Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Inno Setup 6" / "ISCC.exe",
@@ -33,7 +36,7 @@ ISCC_PATHS = [
 
 
 def app_version():
-    return re.search(r'^APP_VERSION = "([^"]+)"', (ROOT / "app.py").read_text(encoding="utf-8"), re.M).group(1)
+    return re.search(r'^APP_VERSION = "([^"]+)"', (HERE / "app.py").read_text(encoding="utf-8"), re.M).group(1)
 
 
 def build_app():
@@ -47,15 +50,14 @@ def build_app():
         sys.executable, "-m", "PyInstaller",
         "--onedir", "--windowed", "--noconfirm", "--clean",
         "--name", "Avance",
-        "--icon", str(ROOT / "favicon.ico"),
+        "--icon", str(WEB / "favicon.ico"),
         "--distpath", str(DIST),
         "--workpath", str(BUILD / "work"),
         "--specpath", str(BUILD),
     ]
-    for name in DATA:
-        src = ROOT / name
-        args += ["--add-data", f"{src};{name if src.is_dir() else '.'}"]
-    args.append(str(ROOT / "app.py"))
+    for src in DATA:
+        args += ["--add-data", f"{src};{src.name if src.is_dir() else '.'}"]
+    args.append(str(HERE / "app.py"))
     subprocess.run(args, check=True)
 
 
@@ -63,7 +65,7 @@ def build_installer(version):
     iscc = next((p for p in ISCC_PATHS if p.exists()), None)
     if not iscc:
         sys.exit("Inno Setup 6 não encontrado. Instale com: winget install JRSoftware.InnoSetup")
-    subprocess.run([str(iscc), "/Q", f"/DAppVersion={version}", str(ROOT / "instalador.iss")], check=True)
+    subprocess.run([str(iscc), "/Q", f"/DAppVersion={version}", str(HERE / "instalador.iss")], check=True)
 
 
 def main():

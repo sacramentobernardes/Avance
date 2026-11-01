@@ -1,7 +1,6 @@
-# Gerados (gerar_exe.py e publicar.py)
+# Gerados por desktop/gerar_instalador.py
 dist/
 build/
-site/
 *.spec
 
 # Python

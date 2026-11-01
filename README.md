@@ -1,110 +1,59 @@
 # Avance
 
-Controle seus slides em tela cheia com gestos das mãos, pela webcam.
-Os gestos são reconhecidos pelo MediaPipe Hand Landmarker, que roda no próprio navegador.
+Passe os slides com gestos da mão, pela webcam. Levante a mão esquerda (gatilho) e deslize a direita para avançar ou voltar.
 
-## Como usar
+- **No navegador:** [www.avance.dev.br](https://www.avance.dev.br) (PDF e imagens)
+- **Aplicativo para Windows:** [baixar o instalador](https://github.com/sacramentobernardes/Avance/releases/latest/download/Avance-Setup.exe) (também abre PowerPoint)
+- **Documentação completa:** [docs/Avance-Documentacao.pdf](docs/Avance-Documentacao.pdf)
 
-1. Dê dois cliques em **`Iniciar.bat`**. O servidor local sobe e o navegador abre em `http://127.0.0.1:8765`.
-2. Permita o acesso à câmera.
-3. Na tela inicial, clique em **Abrir apresentação** ou reabra um arquivo da lista de **Recentes**.
-   Os recentes ficam guardados só neste navegador, e um .pptx não precisa ser convertido de novo.
-4. Siga as 3 etapas:
-   - **Slides:** arraste um **.pdf**, um **.pptx** ou várias **imagens** (ordenadas pelo nome). Clique numa miniatura para escolher o slide inicial.
-   - **Calibração:** faça os gestos até completar o teste rápido. O painel explica por que um movimento não foi aceito.
-   - **Apresentar:** escolha uma meta de duração (opcional) e inicie. Ao sair com `Esc`, dá para continuar do mesmo slide e do mesmo tempo.
+<details>
+<summary><b>Gestos e atalhos</b></summary>
 
-O cronômetro fica âmbar a partir de 80% da meta e vermelho quando ela é ultrapassada.
-
-| Gesto | Ação |
+| Gesto | Efeito |
 |---|---|
-| Mão **esquerda** aberta, palma para a câmera, 5 dedos estendidos | Ativa o gatilho (borda verde) |
-| Mão **direita** da direita para a esquerda (com o gatilho ativo) | Avança o slide |
-| Mão **direita** da esquerda para a direita (com o gatilho ativo) | Volta o slide |
+| Mão **esquerda** aberta, palma para a câmera | Liga o gatilho (moldura verde) |
+| Mão **direita** da direita para a esquerda | Avança |
+| Mão **direita** da esquerda para a direita | Volta |
 
-Teclado e mouse: `→` `PageDown` `Espaço` ou clique avançam. `←` `PageUp` ou clique direito voltam.
-`Home` e `End` vão para o primeiro e o último slide. `T` mostra ou oculta o cronômetro e `R` zera.
-`C` mostra a câmera. `F` liga e desliga a tela cheia. `Esc` sai.
-Os passadores de slides (clickers) USB funcionam normalmente.
+Teclado: `→` `Espaço` avançam · `←` volta · `Home`/`End` primeiro e último · `T` cronômetro · `R` zera · `C` câmera num canto · `F` tela cheia · `Esc` sai.
+A apresentação só começa com a câmera ligada (interruptor no canto superior direito).
+</details>
 
-## Arquivos
-
-- `index.html`, `css/`, `js/`: a aplicação web
-  - `js/gestures.js`: detecção do gatilho e dos swipes (limiares, pausa entre comandos, bloqueio do movimento de retorno da mão)
-  - `js/slides.js`: renderização de PDF (pdf.js) e de imagens, na resolução da tela
-  - `js/app.js`: interface, modo apresentação e transições
-  - `js/recent.js`: arquivos recentes (IndexedDB do navegador)
-- `server.py`: servidor local; também converte .pptx em PDF
-- `converter-pptx.ps1`: conversão .pptx → PDF pelo PowerPoint instalado (também funciona sozinho)
-- `publicar.py`: monta a versão web na pasta `site/` (ver abaixo)
-- `app.py`: o Avance como aplicativo de Windows (janela própria, via WebView2)
-- `instalador.iss` e `gerar_instalador.py`: geram o instalador `dist/Avance-Setup.exe` (ver abaixo)
-- `download.html`: página do site para baixar o Avance para Windows
-
-## Requisitos
-
-- Python 3 e um navegador baseado em Chromium (Chrome ou Edge)
-- Microsoft PowerPoint, apenas para abrir arquivos .pptx
-- Internet no primeiro carregamento, para baixar o MediaPipe, o pdf.js e o modelo de mãos
-
-## Publicar na web
-
-O mesmo app funciona como site. Ele percebe sozinho onde está rodando:
-
-| | Versão para computador (Iniciar.bat) | Versão web (site) |
-|---|---|---|
-| PDF e imagens | ✅ | ✅ |
-| PowerPoint (.pptx) | ✅ convertido pelo PowerPoint instalado | Mostra como salvar em PDF e oferece baixar o instalador |
-| Gestos, cronômetro, recentes | ✅ | ✅ |
-
-Na versão web, a tela inicial também mostra as seções "Versão para computador", "Dúvidas
-frequentes" e "Privacidade". Em telas pequenas, um aviso explica que o app foi feito para computador.
-
-### Gerar o instalador para Windows
-
-O Avance para Windows é um aplicativo de verdade: janela própria (WebView2, o motor do Edge
-que já vem no Windows), atalho no Menu Iniciar, sem console e sem precisar de Python.
-O instalador não pede senha de administrador e aparece em Configurações → Aplicativos.
-
-Pré-requisitos (uma vez):
+<details>
+<summary><b>Estrutura do projeto</b></summary>
 
 ```
-python -m pip install pyinstaller pywebview
-winget install JRSoftware.InnoSetup
+web/       o app (site e aplicativo usam os mesmos arquivos)
+  js/      módulos: main, state, settings, screens, files, slides, recents,
+           recent-store, presentation, timer, camera, gestures
+desktop/   aplicativo para Windows: app.py (janela), server.py (servidor local
+           e conversão de .pptx), converter-pptx.ps1, instalador.iss, gerar_instalador.py
+docs/      documentação em PDF e o script que a gera
 ```
+</details>
 
-Para gerar (a versão vem de `APP_VERSION` em `app.py`):
+<details>
+<summary><b>Desenvolver</b></summary>
 
-```
-python gerar_instalador.py
-```
-
-O resultado fica em `dist/Avance-Setup.exe` (cerca de 12 MB). O Windows mostra o aviso do
-SmartScreen na primeira execução porque o arquivo não tem assinatura digital; a página de
-download explica como seguir ("Mais informações" → "Executar assim mesmo").
-
-O instalador é distribuído pelo **GitHub Releases**, não fica dentro do código. O botão da
-página de download aponta para `…/releases/latest/download/Avance-Setup.exe`, que sempre leva
-à versão mais nova. Para publicar uma versão nova, aumente `APP_VERSION` em `app.py`, gere o
-instalador e rode (troque o número):
+Requer Python 3; para abrir .pptx, o PowerPoint instalado.
 
 ```
-gh release create v1.2.0 dist/Avance-Setup.exe --title "Avance 1.2.0" --notes "O que mudou"
+python desktop/server.py              # no navegador, em http://127.0.0.1:8765
+python -m pip install pywebview
+python desktop/app.py                 # como aplicativo
 ```
+</details>
 
-### Site na Vercel (via GitHub)
+<details>
+<summary><b>Publicar uma versão nova</b></summary>
 
-O site é publicado a partir deste repositório: https://github.com/sacramentobernardes/Avance
+Pré-requisitos, uma vez: `python -m pip install pyinstaller pywebview` e `winget install JRSoftware.InnoSetup`.
 
-- A Vercel serve os arquivos da raiz do jeito que estão, sem etapa de build.
-- O `.vercelignore` deixa de fora o que é só da versão para computador (`server.py`, `Iniciar.bat`…).
-- Cada `git push` na branch `main` atualiza o site sozinho em cerca de 1 minuto.
+1. Aumente `APP_VERSION` em `desktop/app.py`.
+2. `python desktop/gerar_instalador.py` → cria `dist/Avance-Setup.exe`.
+3. `gh release create vX.Y.Z dist/Avance-Setup.exe --title "Avance X.Y.Z"`
+4. `git push` → a Vercel publica a pasta `web/` (configurada em `vercel.json`) em cerca de 1 minuto.
 
-Configuração (uma vez): em vercel.com → **Add New… → Project** → importe o repositório
-`Avance` → em **Framework Preset** deixe **Other**, sem comando de build e com a pasta raiz
-(`./`) → **Deploy**.
-
-### Outras hospedagens (Netlify, Cloudflare Pages)
-
-`python publicar.py` monta a pasta `site/` só com os arquivos do site; envie essa pasta
-pela área de upload do serviço.
+Publique o instalador antes do `git push`: o botão de download aponta para a versão mais nova do GitHub Releases.
+Para atualizar a documentação: `python -m pip install reportlab` e `python docs/gerar_pdf.py`.
+</details>

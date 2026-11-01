@@ -1,5 +1,6 @@
 ; Instalador do Avance para Windows (Inno Setup 6).
-; Não compile direto: rode "python gerar_instalador.py", que monta o app e passa a versão.
+; Não compile direto: rode "python desktop/gerar_instalador.py", que monta o app e passa a versão.
+; Caminhos relativos a esta pasta (desktop/).
 
 #ifndef AppVersion
   #define AppVersion "0.0.0"
@@ -19,9 +20,9 @@ PrivilegesRequired=lowest
 DefaultDirName={localappdata}\Programs\Avance
 DisableProgramGroupPage=yes
 DisableDirPage=auto
-OutputDir=dist
+OutputDir=..\dist
 OutputBaseFilename=Avance-Setup
-SetupIconFile=favicon.ico
+SetupIconFile=..\web\favicon.ico
 UninstallDisplayIcon={app}\Avance.exe
 UninstallDisplayName=Avance
 ArchitecturesAllowed=x64compatible
@@ -39,7 +40,7 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "dist\Avance\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
+Source: "..\dist\Avance\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
 Name: "{autoprograms}\Avance"; Filename: "{app}\Avance.exe"
