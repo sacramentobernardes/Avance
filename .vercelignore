@@ -1,0 +1,11 @@
+# A Vercel publica só o site: index.html, download.html, css/, js/ e ícones.
+# Fica de fora o que é da versão para computador e das ferramentas de build.
+server.py
+Iniciar.bat
+converter-pptx.ps1
+gerar_exe.py
+publicar.py
+README.md
+dist/
+build/
+site/

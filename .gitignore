@@ -1,0 +1,9 @@
+# Gerados (gerar_exe.py e publicar.py)
+dist/
+build/
+site/
+*.spec
+
+# Python
+__pycache__/
+*.pyc

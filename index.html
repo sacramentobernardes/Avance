@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="pt-BR" data-mode="web">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avance</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M7 11V6a1.5 1.5 0 0 1 3 0v4m0-1V4.5a1.5 1.5 0 0 1 3 0V10m0-4.5a1.5 1.5 0 0 1 3 0V11m0-3a1.5 1.5 0 0 1 3 0v6a7 7 0 0 1-7 7h-1a7 7 0 0 1-5.6-2.8L3.6 15a1.6 1.6 0 0 1 2.5-2L7 14"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+    <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><path d="M10 2h4m-2 0v3m0 0a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 4v4l2.5 2.5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4.5V12l3 2"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm4 2h.01M11 9h.01M15 9h.01M7 13h.01M17 9h.01M17 13h.01M9 15.5h6"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zm0 0v5h5"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10m4 0h2M4 17h4m4 0h8M16 5v4M10 15v4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path d="M6 11h12v9H6zm2 0V8a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h3l2-2.5h6L17 7h3v12H4zm8 3a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/></symbol>
+  </svg>
+
+  <!-- ============ Barra superior (tela inicial e etapas) ============ -->
+  <header id="topbar" class="topbar">
+    <button id="brand" class="brand" title="Voltar ao início">Avance<span class="laser">.</span></button>
+
+    <nav id="stepper" class="stepper" aria-label="Etapas" hidden>
+      <button class="step-tab" data-step="1"><span class="num">1</span>Slides</button>
+      <button class="step-tab" data-step="2"><span class="num">2</span>Calibração</button>
+      <button class="step-tab" data-step="3"><span class="num">3</span>Apresentar</button>
+    </nav>
+
+    <div class="top-right">
+      <a class="top-link web-only" href="download.html"><svg><use href="#i-download"/></svg> Baixar para Windows</a>
+      <div id="cam-chip" class="cam-chip"><span class="dot"></span><span id="cam-chip-text">ligando a câmera</span></div>
+    </div>
+  </header>
+
+  <div id="small-screen" class="small-screen" role="status" hidden>
+    <p>O Avance foi feito para notebook ou computador com webcam. No celular, a câmera e a tela cheia podem não funcionar.</p>
+    <button id="small-screen-ok" class="btn quiet">Entendi</button>
+  </div>
+
+  <!-- ============ Tela inicial ============ -->
+  <main id="welcome" class="welcome">
+    <section class="intro">
+      <div class="intro-text">
+        <h1>Avance sem tocar em nada.</h1>
+        <p class="lead">Abra a apresentação, levante a mão esquerda e deslize a direita para avançar ou voltar. Só precisa da webcam.</p>
+        <div class="intro-actions">
+          <button id="begin-btn" class="btn dark lg">Abrir apresentação</button>
+          <span class="note desktop-only">PDF, PowerPoint ou imagens.<br>Os arquivos não saem do seu computador.</span>
+          <span class="note web-only">PDF ou imagens. Tem um PowerPoint? <a href="#desktop">Veja as opções</a>.<br>Os arquivos não saem do seu computador.</span>
+        </div>
+      </div>
+
+      <figure class="hero-demo" aria-hidden="true">
+        <div class="demo-window">
+          <div class="demo-bar"><i></i><i></i><i></i><span>apresentacao.pdf</span></div>
+          <div class="demo-stage">
+            <div class="demo-slide s1">
+              <b class="t"></b><b class="l w80"></b><b class="l w60"></b>
+              <div class="bars"><i style="height:40%"></i><i style="height:65%"></i><i style="height:52%"></i><i style="height:85%"></i></div>
+            </div>
+            <div class="demo-slide s2">
+              <b class="t"></b>
+              <div class="circles"><i></i><i></i><i></i></div>
+              <b class="l w70"></b>
+            </div>
+            <div class="demo-frame"></div>
+            <div class="demo-hand"><svg><use href="#i-hand"/></svg></div>
+            <div class="demo-hud">
+              <span class="demo-pill"><svg><use href="#i-hand"/></svg> gatilho ligado</span>
+              <span class="demo-pill demo-count"><span class="digits"><em class="c1">02</em><em class="c2">03</em></span> / 12</span>
+            </div>
+          </div>
+        </div>
+      </figure>
+    </section>
+
+    <section id="recent" class="recent" hidden>
+      <h2>Abertos recentemente</h2>
+      <ul id="recent-list" class="recent-list"></ul>
+    </section>
+
+    <section id="how" class="how">
+      <h2>Os três gestos</h2>
+      <div class="how-grid">
+        <article>
+          <span class="how-label">mão esquerda · segure</span>
+          <svg class="how-icon mirror"><use href="#i-hand"/></svg>
+          <h3>Gatilho</h3>
+          <p>Mão aberta, palma para a câmera. Enquanto ela estiver levantada, a mão direita controla os slides. Abaixou, nada muda de slide por acidente.</p>
+        </article>
+        <article>
+          <span class="how-label">mão direita · ← deslize</span>
+          <svg class="how-icon"><use href="#i-hand"/></svg>
+          <h3>Avançar</h3>
+          <p>Passe a mão da direita para a esquerda, como quem vira a página de um livro.</p>
+        </article>
+        <article>
+          <span class="how-label">mão direita · deslize →</span>
+          <svg class="how-icon"><use href="#i-hand"/></svg>
+          <h3>Voltar</h3>
+          <p>Passe a mão da esquerda para a direita. Setas do teclado, clique e passador de slides continuam valendo.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="desktop" class="desktop web-only">
+      <h2>Versão para computador</h2>
+      <div class="desktop-grid">
+        <div class="desktop-text">
+          <p>No site, o Avance abre PDF e imagens. A versão para Windows abre arquivos do PowerPoint (.pptx) direto, convertendo com o PowerPoint que você já tem instalado. O resto é igual: gestos, cronômetro e recentes.</p>
+          <a class="btn dark" href="download.html"><svg><use href="#i-download"/></svg> Baixar o Avance para Windows</a>
+        </div>
+        <dl class="specs">
+          <div><dt>Sistema</dt><dd>Windows 10 ou 11</dd></div>
+          <div><dt>PowerPoint</dt><dd>Instalado, para abrir arquivos .pptx</dd></div>
+          <div><dt>Navegador</dt><dd>Chrome ou Edge</dd></div>
+          <div><dt>Como abrir</dt><dd>Dois cliques no <code>Avance.exe</code>, sem instalar</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2>Dúvidas frequentes</h2>
+      <div class="faq-list">
+        <details>
+          <summary>Preciso instalar alguma coisa?</summary>
+          <p>Para PDF e imagens, não: abra o site no Chrome ou no Edge e permita a câmera. Para abrir arquivos .pptx direto, use a versão para computador.</p>
+        </details>
+        <details>
+          <summary>Como uso uma apresentação do PowerPoint?</summary>
+          <p>Salve em PDF e abra o PDF no Avance. No PowerPoint: Arquivo → Exportar → Criar Documento PDF/XPS. No Google Slides: Arquivo → Fazer o download → Documento PDF. Animações e vídeos dentro dos slides não passam para o PDF.</p>
+        </details>
+        <details>
+          <summary>A câmera grava ou envia a minha imagem?</summary>
+          <p>Não. Cada quadro da câmera é analisado no seu próprio navegador e descartado em seguida. Nada é gravado e nada sai do seu computador.</p>
+        </details>
+        <details>
+          <summary>Por que preciso levantar a mão esquerda?</summary>
+          <p>É uma trava de segurança: enquanto a mão esquerda não estiver levantada, os movimentos da direita não mudam o slide. Assim você pode gesticular à vontade enquanto fala. Dá para desligar a trava nos ajustes da calibração.</p>
+        </details>
+        <details>
+          <summary>Os gestos não são reconhecidos. O que fazer?</summary>
+          <p>Use a etapa de calibração: ela mostra se cada mão foi vista e por que um movimento não contou (curto, lento, na vertical). Ajuda ter boa luz no rosto e nas mãos, manter as mãos dentro da imagem e ajustar a sensibilidade.</p>
+        </details>
+        <details>
+          <summary>Posso usar teclado, mouse ou passador de slides?</summary>
+          <p>Sim. As setas, a barra de espaço, o clique e os passadores de slides USB funcionam junto com os gestos.</p>
+        </details>
+        <details>
+          <summary>Funciona no celular ou no tablet?</summary>
+          <p>O Avance foi feito para notebook ou computador com webcam, apresentando numa tela ou projetor. No celular, a câmera e a tela cheia podem não funcionar.</p>
+        </details>
+        <details>
+          <summary>Quais navegadores funcionam?</summary>
+          <p>Chrome e Edge, em versões recentes. Outros navegadores podem funcionar, mas não foram testados.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="privacy" class="privacy">
+      <h2>Privacidade</h2>
+      <div class="privacy-grid">
+        <div>
+          <h3>Seus arquivos</h3>
+          <p>As apresentações são abertas no seu navegador e não são enviadas a nenhum servidor. Na versão para computador, os arquivos .pptx são convertidos pelo PowerPoint no seu próprio computador.</p>
+        </div>
+        <div>
+          <h3>A câmera</h3>
+          <p>A imagem é analisada quadro a quadro no navegador para encontrar as mãos e depois descartada. Não há gravação nem envio de imagem.</p>
+        </div>
+        <div>
+          <h3>O que fica salvo</h3>
+          <p>Os ajustes e a lista de abertos recentemente, com cópias dos arquivos, ficam guardados só neste navegador. Para apagar, use o ✕ na lista ou limpe os dados do site nas configurações do navegador.</p>
+        </div>
+        <div>
+          <h3>Serviços de terceiros</h3>
+          <p>As fontes vêm do Google Fonts, as bibliotecas do jsDelivr e o modelo de mãos do Google. Como em qualquer site, esses serviços e a hospedagem recebem dados técnicos de acesso, como o endereço IP. Não há cookies, contas nem rastreamento de uso.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="welcome-foot">
+      <nav class="foot-links"><a href="#how">Os três gestos</a><a href="#faq">Dúvidas</a><a href="#privacy">Privacidade</a><a class="web-only" href="download.html">Baixar para Windows</a></nav>
+      <span>O reconhecimento das mãos roda no próprio navegador, com o MediaPipe.</span>
+    </footer>
+  </main>
+
+  <!-- ============ Etapas ============ -->
+  <main id="home" class="steps" hidden>
+    <!-- Etapa 1: slides -->
+    <section class="step" data-step="1">
+      <div class="step-head">
+        <h1>Escolha os slides</h1>
+        <p class="desktop-only">PDF, PowerPoint ou uma pasta de imagens (entram na ordem do nome do arquivo).</p>
+        <p class="web-only">PDF ou uma pasta de imagens (entram na ordem do nome do arquivo). Para PowerPoint, salve em PDF antes.</p>
+      </div>
+
+      <label id="dropzone" class="dropzone" tabindex="0">
+        <input id="file-input" type="file" accept=".pdf,.pptx,.ppt,image/*" multiple hidden>
+        <span class="drop-icon"><svg><use href="#i-upload"/></svg></span>
+        <strong>Arraste o arquivo para cá</strong>
+        <span>ou <u>clique para procurar</u> no computador</span>
+        <span class="chips"><i>PDF</i><i class="desktop-only">PPTX</i><i>PNG</i><i>JPG</i></span>
+      </label>
+
+      <div id="pptx-help" class="pptx-help" hidden>
+        <div class="pptx-head">
+          <h2>Este arquivo é do PowerPoint</h2>
+          <p>No navegador, o Avance abre PDF e imagens. Salve a apresentação em PDF, o que leva menos de um minuto, ou use a versão para computador, que abre .pptx direto.</p>
+        </div>
+        <div class="export-grid">
+          <div><h3>PowerPoint</h3><ol><li>Arquivo → Exportar</li><li>Criar Documento PDF/XPS</li><li>Publicar</li></ol></div>
+          <div><h3>Google Slides</h3><ol><li>Arquivo → Fazer o download</li><li>Documento PDF (.pdf)</li></ol></div>
+          <div><h3>Keynote</h3><ol><li>Arquivo → Exportar para</li><li>PDF</li><li>Avançar → Exportar</li></ol></div>
+          <div><h3>Canva</h3><ol><li>Compartilhar → Baixar</li><li>Tipo de arquivo: PDF padrão</li><li>Baixar</li></ol></div>
+        </div>
+        <p class="muted small">Animações e vídeos dentro dos slides não passam para o PDF.</p>
+        <div class="pptx-actions">
+          <button id="pick-pdf" class="btn dark">Escolher o PDF</button>
+          <button id="see-desktop" class="btn quiet"><svg><use href="#i-download"/></svg> Versão para computador</button>
+        </div>
+      </div>
+
+      <div id="deck" class="deck" hidden>
+        <div class="deck-main">
+          <div id="deck-preview" class="deck-preview"></div>
+          <div class="deck-side">
+            <h2 id="deck-title"></h2>
+            <dl class="meta">
+              <div><dt>Formato</dt><dd id="meta-format">–</dd></div>
+              <div><dt>Slides</dt><dd id="meta-count">–</dd></div>
+              <div><dt>Proporção</dt><dd id="meta-aspect">–</dd></div>
+              <div><dt>Tamanho</dt><dd id="meta-size">–</dd></div>
+            </dl>
+            <button id="change-file" class="btn quiet"><svg><use href="#i-file"/></svg> Trocar arquivo</button>
+          </div>
+        </div>
+        <div class="section-head">
+          <h3>Todos os slides</h3>
+          <span class="muted">Clique em um slide para começar por ele</span>
+        </div>
+        <div id="filmstrip" class="filmstrip"></div>
+      </div>
+
+      <p id="load-status" class="status-line" role="status"></p>
+
+      <footer class="step-foot">
+        <span></span>
+        <button id="to-step-2" class="btn dark" disabled>Continuar <svg><use href="#i-arrow-r"/></svg></button>
+      </footer>
+    </section>
+
+    <!-- Etapa 2: calibração -->
+    <section class="step" data-step="2" hidden>
+      <div class="step-head">
+        <h1>Calibre os gestos</h1>
+        <p>Faça cada gesto em frente à câmera. A lista vai sendo marcada conforme o app reconhece.</p>
+      </div>
+
+      <div class="calib">
+        <div class="calib-cam">
+          <div class="camera" id="camera">
+            <video id="cam-video" playsinline muted></video>
+            <canvas id="cam-canvas"></canvas>
+            <div id="cam-placeholder" class="cam-placeholder">
+              <span class="spinner"></span>
+              <span id="cam-message">Iniciando câmera…</span>
+              <button id="cam-retry" class="btn light" hidden>Tentar novamente</button>
+            </div>
+            <div id="swipe-flash" class="swipe-flash"></div>
+            <span class="cam-badge">Imagem espelhada</span>
+          </div>
+          <div class="readouts">
+            <div class="readout"><span class="dot" id="dot-left"></span><span>Mão esquerda</span><b id="txt-left">não detectada</b></div>
+            <div class="readout"><span class="dot right" id="dot-right"></span><span>Mão direita</span><b id="txt-right">não detectada</b></div>
+          </div>
+          <p id="gesture-debug" class="diagnostic" role="status">Faça um gesto para testar. O resultado aparece aqui.</p>
+        </div>
+
+        <div class="calib-side">
+          <div class="card">
+            <div class="card-head">
+              <h3>Teste rápido</h3>
+              <span id="check-count" class="pill">0/5</span>
+            </div>
+            <div class="check-bar"><b id="check-bar"></b></div>
+            <ol class="checklist" id="checklist">
+              <li data-check="cam"><span class="tick"><svg><use href="#i-check"/></svg></span>Câmera ligada</li>
+              <li data-check="left"><span class="tick"><svg><use href="#i-check"/></svg></span>Mão esquerda visível</li>
+              <li data-check="trigger"><span class="tick"><svg><use href="#i-check"/></svg></span>Gatilho ativado</li>
+              <li data-check="next"><span class="tick"><svg><use href="#i-check"/></svg></span>Swipe para avançar</li>
+              <li data-check="prev"><span class="tick"><svg><use href="#i-check"/></svg></span>Swipe para voltar</li>
+            </ol>
+          </div>
+
+          <div class="gesture-cards">
+            <div class="gcard">
+              <div class="gfig green"><svg class="mirror"><use href="#i-hand"/></svg></div>
+              <div><b>Gatilho</b><span>Mão <u>esquerda</u> aberta, palma para a câmera</span></div>
+            </div>
+            <div class="gcard">
+              <div class="gfig indigo"><svg class="arrow"><use href="#i-arrow-l"/></svg><svg><use href="#i-hand"/></svg></div>
+              <div><b>Avançar</b><span>Mão <u>direita</u> da direita para a esquerda</span></div>
+            </div>
+            <div class="gcard">
+              <div class="gfig indigo"><svg><use href="#i-hand"/></svg><svg class="arrow"><use href="#i-arrow-r"/></svg></div>
+              <div><b>Voltar</b><span>Mão <u>direita</u> da esquerda para a direita</span></div>
+            </div>
+          </div>
+
+          <details class="card settings">
+            <summary><svg><use href="#i-sliders"/></svg> Ajustes dos gestos</summary>
+            <label class="range">
+              <span>Sensibilidade do swipe <output id="sens-out"></output></span>
+              <input id="opt-sensitivity" type="range" min="1" max="10" step="1">
+            </label>
+            <label class="check"><input id="opt-require" type="checkbox"> Exigir gatilho da mão esquerda</label>
+            <label class="check"><input id="opt-invert" type="checkbox"> Inverter sentido dos swipes</label>
+            <label class="check"><input id="opt-swap" type="checkbox"> Corrigir identificação das mãos <small>(desmarque se esquerda e direita aparecerem trocadas)</small></label>
+          </details>
+        </div>
+      </div>
+
+      <footer class="step-foot">
+        <button class="btn quiet" data-goto="1"><svg><use href="#i-arrow-l"/></svg> Voltar</button>
+        <button id="to-step-3" class="btn dark" data-goto="3">Continuar <svg><use href="#i-arrow-r"/></svg></button>
+      </footer>
+    </section>
+
+    <!-- Etapa 3: apresentar -->
+    <section class="step" data-step="3" hidden>
+      <div class="step-head">
+        <h1 id="ready-title">Tudo pronto</h1>
+        <p>A apresentação abre em tela cheia. Aperte Esc para voltar aqui.</p>
+      </div>
+
+      <div class="launch">
+        <div class="card summary">
+          <div id="summary-thumb" class="summary-thumb"></div>
+          <div>
+            <h3 id="summary-title">Nenhum arquivo</h3>
+            <ul class="summary-list">
+              <li><span>Slides</span><b id="summary-slides">–</b></li>
+              <li><span>Começa no</span><b id="summary-start">slide 1</b></li>
+              <li><span>Gestos</span><b id="summary-gestures">–</b></li>
+            </ul>
+          </div>
+          <div class="launch-actions">
+            <button id="start-btn" class="btn dark xl" disabled><svg class="fill"><use href="#i-play"/></svg> <span id="start-label">Iniciar apresentação</span></button>
+            <button id="restart-btn" class="btn quiet" hidden><svg><use href="#i-restart"/></svg> Recomeçar do início</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3><svg><use href="#i-timer"/></svg> Cronômetro</h3></div>
+          <p class="muted small">Meta de duração da apresentação</p>
+          <div class="segmented" id="target-options">
+            <button data-min="0" title="Sem meta de duração">Livre</button>
+            <button data-min="5">5 min</button>
+            <button data-min="10">10 min</button>
+            <button data-min="15">15 min</button>
+            <button data-min="20">20 min</button>
+            <button data-min="30">30 min</button>
+            <button data-min="45">45 min</button>
+            <button data-min="60">60 min</button>
+          </div>
+          <label class="inline-input">Outra: <input id="target-custom" type="number" min="1" max="600" placeholder="min"></label>
+          <div class="toggles">
+            <label class="check"><input id="opt-timer" type="checkbox"> Mostrar cronômetro na tela</label>
+            <label class="check"><input id="opt-clock" type="checkbox"> Mostrar relógio (hora atual)</label>
+            <label class="check"><input id="opt-pip" type="checkbox"> Mostrar a câmera num canto</label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3><svg><use href="#i-keyboard"/></svg> Atalhos</h3></div>
+          <dl class="keys">
+            <div><dt><kbd>→</kbd><kbd>Espaço</kbd></dt><dd>Próximo slide</dd></div>
+            <div><dt><kbd>←</kbd></dt><dd>Slide anterior</dd></div>
+            <div><dt><kbd>Home</kbd><kbd>End</kbd></dt><dd>Primeiro e último</dd></div>
+            <div><dt><kbd>T</kbd></dt><dd>Mostrar/ocultar cronômetro</dd></div>
+            <div><dt><kbd>R</kbd></dt><dd>Zerar cronômetro</dd></div>
+            <div><dt><kbd>C</kbd></dt><dd>Mostrar/ocultar câmera</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>Sair da apresentação</dd></div>
+          </dl>
+          <p class="muted small">Clique avança e clique direito volta. Passadores de slides USB também funcionam.</p>
+        </div>
+      </div>
+
+      <footer class="step-foot">
+        <button class="btn quiet" data-goto="2"><svg><use href="#i-arrow-l"/></svg> Voltar</button>
+        <span></span>
+      </footer>
+    </section>
+  </main>
+
+  <!-- ============ Modo apresentação ============ -->
+  <div id="present" class="present" hidden>
+    <div id="stage" class="stage"></div>
+    <div id="trigger-frame" class="trigger-frame"></div>
+
+    <div id="nav-flash-prev" class="nav-flash prev"><svg><use href="#i-arrow-l"/></svg></div>
+    <div id="nav-flash-next" class="nav-flash next"><svg><use href="#i-arrow-r"/></svg></div>
+
+    <div class="hud-bottom">
+      <div id="hud-status" class="hud-pill hud-status" title="Estado do gatilho">
+        <svg><use href="#i-hand"/></svg>
+        <span id="hud-status-text">Gestos em espera</span>
+      </div>
+
+      <div id="hud-time" class="hud-pill hud-time">
+        <span id="timer-wrap" class="timer">
+          <svg><use href="#i-timer"/></svg>
+          <span id="timer-elapsed">00:00</span>
+          <span id="timer-target" class="target"></span>
+          <i class="time-bar"><b id="timer-bar"></b></i>
+        </span>
+        <span id="clock-wrap" class="clock"><svg><use href="#i-clock"/></svg><span id="clock">00:00</span></span>
+      </div>
+
+      <div class="hud-pill hud-counter"><span id="counter-current">1</span><span class="sep">/</span><span id="counter-total">1</span></div>
+    </div>
+    <div class="progress"><div id="progress-bar"></div></div>
+
+    <div id="pip" class="pip" hidden>
+      <video id="pip-video" playsinline muted></video>
+      <canvas id="pip-canvas"></canvas>
+    </div>
+
+    <button id="exit-btn" class="exit-btn" title="Sair (Esc)"><svg><use href="#i-x"/></svg></button>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
