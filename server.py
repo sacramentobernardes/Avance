@@ -3,7 +3,8 @@
 - Serve os arquivos da aplicação em http://127.0.0.1:8765 (a webcam exige localhost ou HTTPS).
 - POST /convert recebe um .pptx e devolve o PDF gerado pelo PowerPoint instalado na máquina.
 
-Também é o ponto de entrada do Avance.exe (gerado por gerar_exe.py).
+Rodando direto (Iniciar.bat), abre o app no navegador. O aplicativo instalável (app.py)
+usa make_server() para rodar o mesmo servidor dentro da própria janela.
 """
 
 import json
@@ -60,6 +61,8 @@ class Handler(SimpleHTTPRequestHandler):
                     "-File", str(CONVERTER), "-Entrada", str(entrada), "-Saida", str(saida),
                 ],
                 capture_output=True, text=True, timeout=180,
+                # Sem janela de console piscando quando roda dentro do aplicativo.
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
             if proc.returncode != 0 or not saida.exists():
                 detalhe = (proc.stderr or proc.stdout).strip()[-500:]
@@ -86,10 +89,14 @@ class Handler(SimpleHTTPRequestHandler):
             super().log_message(fmt, *args)
 
 
-def already_running():
+def already_running(port=PORT):
     with socket.socket() as s:
         s.settimeout(0.5)
-        return s.connect_ex((HOST, PORT)) == 0
+        return s.connect_ex((HOST, port)) == 0
+
+
+def make_server(port=PORT):
+    return ThreadingHTTPServer((HOST, port), partial(Handler, directory=str(ROOT)))
 
 
 def main():
@@ -101,7 +108,7 @@ def main():
             webbrowser.open(url)
         return
 
-    server = ThreadingHTTPServer((HOST, PORT), partial(Handler, directory=str(ROOT)))
+    server = make_server()
     if sys.platform == "win32":
         import ctypes
         ctypes.windll.kernel32.SetConsoleTitleW("Avance")

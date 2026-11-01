@@ -37,7 +37,8 @@ Os passadores de slides (clickers) USB funcionam normalmente.
 - `server.py`: servidor local; também converte .pptx em PDF
 - `converter-pptx.ps1`: conversão .pptx → PDF pelo PowerPoint instalado (também funciona sozinho)
 - `publicar.py`: monta a versão web na pasta `site/` (ver abaixo)
-- `gerar_exe.py`: gera o `dist/Avance.exe` (ver abaixo)
+- `app.py`: o Avance como aplicativo de Windows (janela própria, via WebView2)
+- `instalador.iss` e `gerar_instalador.py`: geram o instalador `dist/Avance-Setup.exe` (ver abaixo)
 - `download.html`: página do site para baixar o Avance para Windows
 
 ## Requisitos
@@ -53,32 +54,42 @@ O mesmo app funciona como site. Ele percebe sozinho onde está rodando:
 | | Versão para computador (Iniciar.bat) | Versão web (site) |
 |---|---|---|
 | PDF e imagens | ✅ | ✅ |
-| PowerPoint (.pptx) | ✅ convertido pelo PowerPoint instalado | Mostra como salvar em PDF e oferece baixar o Avance.exe |
+| PowerPoint (.pptx) | ✅ convertido pelo PowerPoint instalado | Mostra como salvar em PDF e oferece baixar o instalador |
 | Gestos, cronômetro, recentes | ✅ | ✅ |
 
 Na versão web, a tela inicial também mostra as seções "Versão para computador", "Dúvidas
 frequentes" e "Privacidade". Em telas pequenas, um aviso explica que o app foi feito para computador.
 
-### Gerar o Avance.exe (versão para Windows)
+### Gerar o instalador para Windows
 
-O `.exe` reúne o servidor local e as páginas num arquivo só: quem baixa não precisa de Python.
-Precisa do PyInstaller, instalado uma vez:
+O Avance para Windows é um aplicativo de verdade: janela própria (WebView2, o motor do Edge
+que já vem no Windows), atalho no Menu Iniciar, sem console e sem precisar de Python.
+O instalador não pede senha de administrador e aparece em Configurações → Aplicativos.
 
-```
-python -m pip install pyinstaller
-python gerar_exe.py
-```
-
-O resultado fica em `dist/Avance.exe` (cerca de 8 MB). O Windows mostra o aviso do SmartScreen
-na primeira execução porque o arquivo não tem assinatura digital; a página de download explica
-como seguir ("Mais informações" → "Executar assim mesmo").
-
-O `.exe` é distribuído pelo **GitHub Releases**, não fica dentro do código. O botão da página
-de download aponta para `…/releases/latest/download/Avance.exe`, que sempre leva à versão mais nova.
-Para publicar uma versão nova (troque o número):
+Pré-requisitos (uma vez):
 
 ```
-gh release create v1.1.0 dist/Avance.exe --title "Avance 1.1.0" --notes "O que mudou"
+python -m pip install pyinstaller pywebview
+winget install JRSoftware.InnoSetup
+```
+
+Para gerar (a versão vem de `APP_VERSION` em `app.py`):
+
+```
+python gerar_instalador.py
+```
+
+O resultado fica em `dist/Avance-Setup.exe` (cerca de 12 MB). O Windows mostra o aviso do
+SmartScreen na primeira execução porque o arquivo não tem assinatura digital; a página de
+download explica como seguir ("Mais informações" → "Executar assim mesmo").
+
+O instalador é distribuído pelo **GitHub Releases**, não fica dentro do código. O botão da
+página de download aponta para `…/releases/latest/download/Avance-Setup.exe`, que sempre leva
+à versão mais nova. Para publicar uma versão nova, aumente `APP_VERSION` em `app.py`, gere o
+instalador e rode (troque o número):
+
+```
+gh release create v1.2.0 dist/Avance-Setup.exe --title "Avance 1.2.0" --notes "O que mudou"
 ```
 
 ### Site na Vercel (via GitHub)

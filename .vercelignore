@@ -3,7 +3,9 @@
 server.py
 Iniciar.bat
 converter-pptx.ps1
-gerar_exe.py
+app.py
+gerar_instalador.py
+instalador.iss
 publicar.py
 README.md
 dist/

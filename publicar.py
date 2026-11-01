@@ -1,6 +1,6 @@
 """Monta a versão web do Avance na pasta site/, pronta para subir numa hospedagem.
 
-O Avance.exe não vai para o site: ele é publicado no GitHub Releases, e o botão da
+O instalador (Avance-Setup.exe) não vai para o site: ele é publicado no GitHub Releases, e o botão da
 página download.html aponta para lá.
 
 Uso:  python publicar.py
