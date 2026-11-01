@@ -17,6 +17,8 @@ const state = {
   stripToken: 0,
   gestures: null,
   gesturesFailed: false,
+  camera: "off", // "off" | "starting" | "on" | "error"
+  cameraError: "",
   drawHands: null,
   checks: new Set(),
 };
@@ -32,6 +34,7 @@ const settings = {
   showTimer: true,
   showClock: true,
   targetMin: 0,
+  cameraOn: true, // a pessoa pode desligar; a escolha vale para a próxima abertura
 };
 
 try { Object.assign(settings, JSON.parse(localStorage.getItem(SETTINGS_KEY)) ?? {}); } catch {}
@@ -359,6 +362,7 @@ async function renderSummary() {
   $("summary-slides").textContent = deck.count;
   $("summary-start").textContent = `slide ${slide}`;
 
+  renderCameraSummary();
   const g = $("summary-gestures");
   const calibrated = state.checks.size === CHECKS.length;
   g.textContent = state.gesturesFailed ? "Indisponíveis" : calibrated ? "Calibrados" : "Não testados";
@@ -406,6 +410,8 @@ function renderTime() {
 
 async function startPresentation({ fresh = false } = {}) {
   if (!state.deck) return;
+  // Os slides passam pelos gestos: sem câmera ligada, a apresentação não começa.
+  if (state.camera !== "on") return openCameraAlert();
   if (fresh || !state.resumable) {
     state.index = state.startIndex;
     timerReset();
@@ -583,7 +589,7 @@ function setTriggerUI(active) {
   $("present").classList.toggle("armed", active);
   $("camera").classList.toggle("active", active);
   $("hud-status-text").textContent = active ? "Gatilho ativo" : "Gestos em espera";
-  setCamChip(active ? "armed" : "ready", active ? "gatilho ligado" : "câmera pronta");
+  if (state.camera === "on") setCamChip(active ? "armed" : "ready", active ? "gatilho ligado" : "câmera ligada");
   if (active) check("trigger");
 }
 
@@ -648,13 +654,52 @@ function showDiagnostic(text, kind) {
   el.className = `diagnostic ${kind}`;
 }
 
+// ---------------------------------------------------------------- Câmera: ligar e desligar
+
+// Reflete o estado da câmera no interruptor da barra, na calibração e no resumo.
+function setCameraStatus(status, error = "") {
+  state.camera = status;
+  state.cameraError = error;
+  state.gesturesFailed = status === "error";
+
+  const toggle = $("cam-toggle");
+  toggle.setAttribute("aria-checked", String(status === "on" || status === "starting"));
+  toggle.disabled = status === "starting";
+  const chip = {
+    off: ["", "câmera desligada"],
+    starting: ["", "ligando a câmera"],
+    on: ["ready", "câmera ligada"],
+    error: ["error", "câmera com problema"],
+  }[status];
+  setCamChip(...chip);
+
+  // Área da câmera na calibração
+  $("cam-placeholder").hidden = status === "on";
+  $("cam-message").textContent =
+    status === "off" ? "A câmera está desligada." :
+    status === "starting" ? "Ligando a câmera e o reconhecimento das mãos…" : error;
+  $("cam-retry").hidden = status === "on" || status === "starting";
+  $("cam-retry").textContent = status === "error" ? "Tentar novamente" : "Ligar a câmera";
+  document.querySelector(".cam-placeholder .spinner").hidden = status !== "starting";
+
+  if (status !== "on") {
+    setTriggerUI(false);
+    for (const id of ["dot-left", "dot-right"]) $(id).className = `dot${id === "dot-right" ? " right" : ""}`;
+    $("txt-left").textContent = $("txt-right").textContent = "câmera desligada";
+  }
+  renderCameraSummary();
+  if ($("cam-alert").open && status === "on") $("cam-alert").close();
+}
+
+function renderCameraSummary() {
+  const el = $("summary-camera");
+  el.textContent = { off: "Desligada", starting: "Ligando…", on: "Ligada", error: "Com problema" }[state.camera];
+  el.className = state.camera === "on" ? "ok" : "warn";
+}
+
 async function startCamera() {
-  const msg = $("cam-message");
-  const retry = $("cam-retry");
-  $("cam-placeholder").hidden = false;
-  retry.hidden = true;
-  msg.textContent = "Iniciando câmera e modelo de mãos…";
-  setCamChip("", "ligando a câmera");
+  if (state.camera === "starting" || state.camera === "on") return;
+  setCameraStatus("starting");
 
   try {
     const { GestureController, drawHands } = await import("./gestures.js");
@@ -663,24 +708,69 @@ async function startCamera() {
     state.gestures = new GestureController($("cam-video"), { onTrigger: setTriggerUI, onSwipe, onFrame, onDebug });
     applySettings();
     await state.gestures.start();
-    $("pip-video").srcObject = $("cam-video").srcObject;
+    if (!settings.cameraOn) return stopCamera(); // desligada enquanto ligava
+
+    const stream = $("cam-video").srcObject;
+    $("pip-video").srcObject = stream;
     $("pip-video").play().catch(() => {});
-    $("cam-placeholder").hidden = true;
-    state.gesturesFailed = false;
-    setCamChip("ready", "câmera pronta");
+    // Câmera desconectada ou tomada por outro programa no meio do uso.
+    stream.getVideoTracks()[0]?.addEventListener("ended", () => {
+      if (state.camera === "on") cameraFailed("A câmera foi desconectada ou está em uso por outro programa.");
+    });
+    setCameraStatus("on");
     check("cam");
   } catch (err) {
     console.error(err);
-    state.gestures = null;
-    state.gesturesFailed = true;
-    msg.textContent =
-      err?.name === "NotAllowedError" ? "Permissão da câmera negada. Libere o acesso no navegador (ícone ao lado do endereço)." :
-      err?.name === "NotFoundError" ? "Nenhuma webcam encontrada." :
-      err?.name === "NotReadableError" ? "A webcam está em uso por outro aplicativo." :
-      "Não foi possível iniciar os gestos (verifique a conexão com a internet). Teclado e mouse continuam funcionando.";
-    retry.hidden = false;
-    setCamChip("error", "câmera indisponível");
+    cameraFailed(
+      err?.name === "NotAllowedError" ? "Permissão da câmera negada. Libere o acesso no navegador (ícone ao lado do endereço) e tente de novo." :
+      err?.name === "NotFoundError" ? "Nenhuma webcam encontrada. Conecte uma câmera e tente de novo." :
+      err?.name === "NotReadableError" ? "A webcam está em uso por outro aplicativo. Feche o outro programa e tente de novo." :
+      "Não foi possível ligar o reconhecimento das mãos. Verifique a conexão com a internet e tente de novo."
+    );
   }
+}
+
+function cameraFailed(message) {
+  state.gestures?.stop();
+  state.gestures = null;
+  setCameraStatus("error", message);
+}
+
+function stopCamera() {
+  state.gestures?.stop();
+  state.gestures = null;
+  $("cam-video").srcObject = null;
+  $("pip-video").srcObject = null;
+  setCameraStatus("off");
+}
+
+function setCameraOn(on) {
+  settings.cameraOn = on;
+  saveSettings();
+  on ? startCamera() : stopCamera();
+}
+
+// Alerta mostrado ao tentar apresentar sem a câmera ligada.
+function openCameraAlert() {
+  const text = {
+    off: "A câmera está desligada. O Avance passa os slides pelos gestos da mão, então ela precisa estar ligada para a apresentação começar.",
+    starting: "A câmera ainda está ligando. Aguarde alguns segundos e clique em iniciar de novo.",
+    error: `A câmera não está funcionando: ${state.cameraError} A apresentação só começa com a câmera ligada.`,
+  }[state.camera];
+  $("cam-alert-text").textContent = text;
+  $("cam-alert-ok").textContent = state.camera === "starting" ? "Entendi" : state.camera === "error" ? "Tentar novamente" : "Ligar a câmera";
+  $("cam-alert-cancel").hidden = state.camera === "starting";
+  $("cam-alert").showModal();
+}
+
+function bindCameraControls() {
+  $("cam-toggle").addEventListener("click", () => setCameraOn(!(state.camera === "on" || state.camera === "starting")));
+  $("cam-retry").addEventListener("click", () => setCameraOn(true));
+  $("cam-alert-cancel").addEventListener("click", () => $("cam-alert").close());
+  $("cam-alert-ok").addEventListener("click", () => {
+    if (state.camera !== "starting") setCameraOn(true);
+    $("cam-alert").close();
+  });
 }
 
 // ---------------------------------------------------------------- Versão web x computador
@@ -721,5 +811,6 @@ bindWebExtras();
 modeReady = detectMode();
 updateStepper();
 showView("welcome");
-$("cam-retry").addEventListener("click", startCamera);
-startCamera();
+bindCameraControls();
+if (settings.cameraOn) startCamera();
+else setCameraStatus("off");

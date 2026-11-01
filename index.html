@@ -46,7 +46,10 @@
 
     <div class="top-right">
       <a class="top-link web-only" href="download.html"><svg><use href="#i-download"/></svg> Baixar para Windows</a>
-      <div id="cam-chip" class="cam-chip"><span class="dot"></span><span id="cam-chip-text">ligando a câmera</span></div>
+      <button id="cam-toggle" class="cam-toggle" role="switch" aria-checked="false" title="Ligar ou desligar a câmera">
+        <span id="cam-chip" class="cam-chip"><span class="dot"></span><span id="cam-chip-text">ligando a câmera</span></span>
+        <span class="switch" aria-hidden="true"><i></i></span>
+      </button>
     </div>
   </header>
 
@@ -360,6 +363,7 @@
             <ul class="summary-list">
               <li><span>Slides</span><b id="summary-slides">–</b></li>
               <li><span>Começa no</span><b id="summary-start">slide 1</b></li>
+              <li><span>Câmera</span><b id="summary-camera">–</b></li>
               <li><span>Gestos</span><b id="summary-gestures">–</b></li>
             </ul>
           </div>
@@ -411,6 +415,16 @@
       </footer>
     </section>
   </main>
+
+  <!-- Alerta: a apresentação só começa com a câmera ligada -->
+  <dialog id="cam-alert" class="alert-dialog" aria-labelledby="cam-alert-title">
+    <h2 id="cam-alert-title">Ligue a câmera para apresentar</h2>
+    <p id="cam-alert-text"></p>
+    <div class="alert-actions">
+      <button id="cam-alert-cancel" class="btn quiet">Agora não</button>
+      <button id="cam-alert-ok" class="btn dark">Ligar a câmera</button>
+    </div>
+  </dialog>
 
   <!-- ============ Modo apresentação ============ -->
   <div id="present" class="present" hidden>

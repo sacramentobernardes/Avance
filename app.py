@@ -20,7 +20,7 @@ import webview
 
 import server
 
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.2.0"
 # Porta fixa: o WebView2 guarda ajustes e recentes por endereço, então ela não pode mudar
 # entre uma abertura e outra. É diferente da 8765 para não brigar com o Iniciar.bat.
 PORT = int(os.environ.get("AVANCE_PORTA_APP", 47821))
